@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Product Details</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:Poppins,sans-serif;
+background:#f7f2ea;
+padding:40px;
+}
+
+.product-container{
+max-width:1200px;
+margin:auto;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:40px;
+}
+
+.product-image img{
+width:100%;
+border-radius:20px;
+}
+
+.product-name{
+font-size:38px;
+font-weight:700;
+margin-bottom:15px;
+}
+
+.price{
+font-size:30px;
+font-weight:600;
+color:#4d7c57;
+margin-bottom:20px;
+}
+
+.description{
+line-height:1.8;
+margin-bottom:30px;
+}
+
+.add-cart{
+background:#4d7c57;
+color:white;
+border:none;
+padding:15px 30px;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+}
+
+@media(max-width:768px){
+
+.product-container{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="product-container">
+
+<div class="product-image">
+
+<img id="productImage">
+
+</div>
+
+<div>
+
+<div
+class="product-name"
+id="productName">
+</div>
+
+<div
+class="price"
+id="productPrice">
+</div>
+
+<div
+class="description"
+id="productDescription">
+</div>
+
+  <h3>Benefits</h3>
+
+<div id="productBenefits"></div>
+
+<button
+class="add-cart"
+onclick="addCurrentProductToCart()">
+Add To Cart
+</button>
+
+</div>
+
+  <h3>Reviews</h3>
+
+<div id="reviews"></div>
+
+<textarea
+id="reviewText"
+placeholder="Write a review">
+</textarea>
+
+<select id="rating">
+
+<option>5</option>
+<option>4</option>
+<option>3</option>
+<option>2</option>
+<option>1</option>
+
+</select>
+
+<button onclick="submitReview()">
+Submit Review
+</button>
+
+</div>
+
+<script>
+
+let currentProduct;
+
+loadProduct();
+
+function loadProduct(){
+
+const index =
+localStorage.getItem(
+"selectedProduct"
+);
+
+const products =
+JSON.parse(
+localStorage.getItem("products")
+) || [];
+
+currentProduct =
+products[index];
+
+document.getElementById(
+"productImage"
+).src =
+currentProduct.image;
+
+document.getElementById(
+"productName"
+).innerText =
+currentProduct.name;
+
+document.getElementById(
+"productPrice"
+).innerText =
+"₦" + currentProduct.price;
+
+document.getElementById(
+"productDescription"
+).innerText =
+currentProduct.description;
+
+  document.getElementById(
+"productBenefits"
+).innerText =
+currentProduct.benefits || "";
+
+  loadReviews();
+
+}
+
+function addCurrentProductToCart(){
+
+let cart =
+JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+cart.push(currentProduct);
+
+localStorage.setItem(
+"cart",
+JSON.stringify(cart)
+);
+
+alert("Added To Cart");
+
+}
+
+  function submitReview(){
+
+let reviews =
+JSON.parse(
+localStorage.getItem("reviews")
+) || [];
+
+reviews.push({
+
+product:
+currentProduct.name,
+
+rating:
+document.getElementById("rating").value,
+
+comment:
+document.getElementById("reviewText").value
+
+});
+
+localStorage.setItem(
+"reviews",
+JSON.stringify(reviews)
+);
+
+loadReviews();
+
+  }
+
+  function loadReviews(){
+
+let reviews =
+JSON.parse(
+localStorage.getItem("reviews")
+) || [];
+
+let html = "";
+
+reviews.forEach(review=>{
+
+if(review.product===currentProduct.name){
+
+html += `
+
+<div class="review">
+
+⭐⭐⭐⭐⭐
+(${review.rating})
+
+<br>
+
+${review.comment}
+
+</div>
+
+`;
+
+}
+
+});
+
+document.getElementById("reviews")
+.innerHTML = html;
+
+  }
+
+</script>
+
+</body>
+</html>

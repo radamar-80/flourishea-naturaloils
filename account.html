@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Account</title>
+</head>
+
+<body>
+
+<h1>My Account</h1>
+
+<h2 id="welcome"></h2>
+
+<button onclick="logout()">
+Logout
+</button>
+
+<script>
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"currentUser"
+)
+);
+
+if(!user){
+
+window.location.href =
+"login.html";
+
+}
+
+document.getElementById(
+"welcome"
+).innerText =
+"Welcome " + user.name;
+
+function logout(){
+
+localStorage.removeItem(
+"currentUser"
+);
+
+window.location.href =
+"login.html";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -177,6 +177,81 @@ border-radius:8px;
 cursor:pointer;
 }
 
+  .stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+margin-bottom:25px;
+}
+
+.stat-card{
+background:white;
+padding:25px;
+border-radius:20px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.stat-card h3{
+font-size:32px;
+color:#4d7c57;
+margin-bottom:10px;
+}
+
+.stat-card p{
+color:gray;
+}
+
+  .logout-btn{
+background:#4d7c57;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:10px;
+cursor:pointer;
+  }
+
+.admin-layout{
+display:flex;
+min-height:100vh;
+}
+
+.sidebar{
+width:260px;
+background:#4d7c57;
+color:white;
+padding:25px;
+}
+
+.sidebar h2{
+margin-bottom:40px;
+}
+
+.menu-item{
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
+transition:.3s;
+}
+
+.menu-item:hover{
+background:rgba(255,255,255,.15);
+}
+
+.active{
+background:white;
+color:#4d7c57;
+font-weight:600;
+}
+
+.main-content{
+flex:1;
+padding:30px;
+background:#f7f2ea;
+overflow-y:auto;
+}
+  
 </style>
 </head>
 
@@ -214,14 +289,87 @@ Login
 
 <div id="dashboard">
 
+<div class="admin-layout">
+
+  <div id="ordersSection"
+style="display:none;">
+
+<div class="card">
+
+<h2>Orders</h2>
+
+<div id="ordersList"></div>
+
+</div>
+
+  </div>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h2>Flourishea</h2>
+
+<div class="menu-item active"
+onclick="showSection('dashboardSection',this)">
+Dashboard
+</div>
+
+<div class="menu-item"
+onclick="showSection('productsSection',this)">
+Products
+</div>
+
+<div class="menu-item"
+onclick="showSection('categoriesSection',this)">
+Categories
+</div>
+
+<div class="menu-item"
+onclick="showSection('ordersSection',this)">
+Orders
+</div>
+
+<div class="menu-item"
+onclick="showSection('customersSection',this)">
+Customers
+</div>
+
+<div class="menu-item"
+onclick="showSection('settingsSection',this)">
+Settings
+</div>
+
+</div>
+
+  </div>
+
+</div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content">
+
 <header>
 
 <div>
-<div class="logo">Flourishea</div>
+
+<div class="logo">
+Flourishea
+</div>
+
 <div class="admin-tag">
 Admin Dashboard
 </div>
+
 </div>
+
+<button class="logout-btn"
+onclick="logout()">
+Logout
+</button>
 
 </header>
 
@@ -229,6 +377,49 @@ Admin Dashboard
 
 <div class="card">
 
+  <div id="dashboardSection">
+  <div class="stats">
+
+<div class="stat-card">
+<h3 id="totalProducts">0</h3>
+<p>Products</p>
+</div>
+
+<div class="stat-card">
+<h3 id="totalStock">0</h3>
+<p>Total Stock</p>
+</div>
+
+<div class="stat-card">
+<h3 id="inStock">0</h3>
+<p>In Stock</p>
+</div>
+
+<div class="stat-card">
+<h3 id="outStock">0</h3>
+<p>Out of Stock</p>
+</div>
+  </div>
+  </div>
+
+  <div id="productsSection" style="display:none;">
+
+    <input
+type="text"
+id="productSearch"
+placeholder="Search products..."
+onkeyup="loadProducts()">
+
+    <select
+id="filterCategory"
+onchange="loadProducts()">
+
+<option value="All">
+All Categories
+</option>
+
+    </select>
+    
 <h2>Add Product</h2>
 
 <div class="preview" id="preview">
@@ -245,23 +436,32 @@ type="text"
 id="name"
 placeholder="Product Name">
 
-<select id="category">
-
-<option>Cream</option>
-<option>Oil</option>
-<option>Lotion</option>
-
-</select>
+<select id="category"></select>
 
 <input
 type="number"
 id="price"
 placeholder="Price">
 
+  <input
+type="number"
+id="stock"
+placeholder="Stock Quantity">
+
+<select id="status">
+    <option value="In Stock">In Stock</option>
+    <option value="Out of Stock">Out of Stock</option>
+</select>
+
 <textarea
 id="description"
 placeholder="Description">
 </textarea>
+
+    <textarea
+id="benefits"
+placeholder="Benefits">
+    </textarea>
 
 <button
 class="save-btn"
@@ -270,19 +470,76 @@ Add Product
 </button>
 
 </div>
+<div id="categoriesSection" style="display:none;">
 
 <div class="card">
 
-<h2>Products</h2>
+<h2>Category Management</h2>
 
-<div id="productList"></div>
+<input
+type="text"
+id="newCategory"
+placeholder="Category Name">
+
+<button
+class="save-btn"
+onclick="addCategory()">
+Add Category
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Current Categories</h2>
+
+<div id="categoryList"></div>
 
 </div>
 
 </div>
 
+  <div id="ordersSection"
+style="display:none;">
+
+<div class="card">
+
+<h2>Orders</h2>
+
+<p>No orders yet.</p>
+
 </div>
 
+  </div>
+
+  <div id="customersSection"
+style="display:none;">
+
+<div class="card">
+
+<h2>Customers</h2>
+
+<p>No customers yet.</p>
+
+</div>
+
+  </div>
+
+  <div id="settingsSection"
+style="display:none;">
+
+<div class="card">
+
+<h2>Settings</h2>
+
+<p>Store settings will appear here.</p>
+
+</div>
+
+  </div>
+
+  <input type="hidden" id="editingIndex">
+  
 <script>
 
 let uploadedImage = "";
@@ -307,6 +564,9 @@ document.getElementById("dashboard")
 .style.display="block";
 
 loadProducts();
+loadCategories();
+loadOrders();
+updateStats();
 
 }else{
 
@@ -315,6 +575,127 @@ alert("Wrong login details");
 }
 
 }
+
+  if(!localStorage.getItem("categories")){
+
+localStorage.setItem(
+"categories",
+JSON.stringify([
+"Cream",
+"Oil",
+"Lotion"
+])
+);
+
+  }
+
+  function addCategory(){
+
+const name =
+document.getElementById("newCategory")
+.value.trim();
+
+if(name==="") return;
+
+let categories =
+JSON.parse(
+localStorage.getItem("categories")
+);
+
+categories.push(name);
+
+localStorage.setItem(
+"categories",
+JSON.stringify(categories)
+);
+
+document.getElementById("newCategory")
+.value="";
+
+loadCategories();
+populateCategoryDropdown();
+
+  }
+
+  function loadCategories(){
+
+let categories =
+JSON.parse(
+localStorage.getItem("categories")
+);
+
+let html = "";
+
+categories.forEach((category,index)=>{
+
+html += `
+
+<div class="product">
+
+<div class="product-info">
+
+<h3>${category}</h3>
+
+</div>
+
+<button
+class="delete-btn"
+onclick="deleteCategory(${index})">
+Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("categoryList")
+.innerHTML = html;
+
+  }
+
+  function deleteCategory(index){
+
+let categories =
+JSON.parse(
+localStorage.getItem("categories")
+);
+
+categories.splice(index,1);
+
+localStorage.setItem(
+"categories",
+JSON.stringify(categories)
+);
+
+loadCategories();
+populateCategoryDropdown();
+
+  }
+
+  function populateCategoryDropdown(){
+
+let categories =
+JSON.parse(
+localStorage.getItem("categories")
+);
+
+const select =
+document.getElementById("category");
+
+select.innerHTML = "";
+
+categories.forEach(category=>{
+
+select.innerHTML +=
+`<option>${category}</option>`;
+
+  populateFilterCategories();
+  
+});
+
+  }
 
 /* IMAGE PREVIEW */
 
@@ -344,85 +725,152 @@ reader.readAsDataURL(file);
 
 /* SAVE PRODUCT */
 
-function saveProduct(){
+async function saveProduct(){
 
-const product={
+const product = {
 
-image:uploadedImage,
+name:
+document.getElementById("name").value,
 
-name:document.getElementById("name").value,
+price:
+document.getElementById("price").value,
 
-category:document.getElementById("category").value,
+category:
+document.getElementById("category").value,
 
-price:document.getElementById("price").value,
+description:
+document.getElementById("description").value,
 
-description:document.getElementById("description").value
+stock:
+document.getElementById("stock").value,
+
+status:
+document.getElementById("status").value,
+
+image:
+uploadedImage
 
 };
 
-let products=
-JSON.parse(
-localStorage.getItem("products")
-) || [];
-
-products.push(product);
-
-localStorage.setItem(
-"products",
-JSON.stringify(products)
+await fetch(
+"http://localhost:3000/products",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(product)
+}
 );
 
-loadProducts();
+alert("Product Saved");
 
-alert("Product Added");
-
-}
+  }
 
 /* LOAD PRODUCTS */
 
-function loadProducts(){
+  async function loadStoreProducts(){
 
-let products=
+  const response =
+  await fetch(
+  "http://localhost:3000/products"
+  );
+
+  const products =
+  await response.json();
+
+  ...
+  }
+
+document.getElementById("productList").innerHTML = html;
+
+  updateStats();
+
+  }
+
+  function populateFilterCategories(){
+
+const filter =
+document.getElementById("filterCategory");
+
+if(!filter) return;
+
+let categories =
 JSON.parse(
-localStorage.getItem("products")
+localStorage.getItem("categories")
 ) || [];
 
-let html="";
+filter.innerHTML =
+'<option value="All">All Categories</option>';
 
-products.forEach((product,index)=>{
+categories.forEach(category=>{
 
-html += `
-
-<div class="product">
-
-<img src="${product.image}">
-
-<div class="product-info">
-
-<h3>${product.name}</h3>
-
-<p>${product.category}</p>
-
-<p>₦${product.price}</p>
-
-</div>
-
-<button
-class="delete-btn"
-onclick="deleteProduct(${index})">
-Delete
-</button>
-
-</div>
-
-`;
+filter.innerHTML +=
+`<option value="${category}">
+${category}
+</option>`;
 
 });
 
-document.getElementById("productList")
-.innerHTML=html;
+  }
+  
+  function updateStats(){
 
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
+
+let totalProducts = products.length;
+
+let totalStock = 0;
+
+let inStock = 0;
+
+let outStock = 0;
+
+    products = products.filter(product=>{
+
+const matchesSearch =
+
+product.name
+.toLowerCase()
+.includes(search);
+
+const matchesCategory =
+
+categoryFilter==="All" ||
+
+product.category===categoryFilter;
+
+return matchesSearch &&
+matchesCategory;
+
+});
+
+products.forEach(product=>{
+
+totalStock += Number(product.stock || 0);
+
+if(product.status==="In Stock"){
+inStock++;
+}else{
+outStock++;
 }
+
+});
+
+document.getElementById("totalProducts")
+.innerText = totalProducts;
+
+document.getElementById("totalStock")
+.innerText = totalStock;
+
+document.getElementById("inStock")
+.innerText = inStock;
+
+document.getElementById("outStock")
+.innerText = outStock;
+
+  }
 
 /* DELETE */
 
@@ -443,6 +891,230 @@ JSON.stringify(products)
 loadProducts();
 
 }
+
+  function editProduct(index){
+
+let products =
+JSON.parse(localStorage.getItem("products")) || [];
+
+const product = products[index];
+
+uploadedImage = product.image;
+
+document.getElementById("preview").innerHTML =
+`<img src="${product.image}">`;
+
+document.getElementById("name").value =
+product.name;
+
+document.getElementById("category").value =
+product.category;
+
+document.getElementById("price").value =
+product.price;
+
+document.getElementById("stock").value =
+product.stock;
+
+document.getElementById("status").value =
+product.status;
+
+document.getElementById("description").value =
+product.description;
+
+document.getElementById("editingIndex").value =
+index;
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+  function clearForm(){
+
+document.getElementById("name").value = "";
+
+document.getElementById("price").value = "";
+
+document.getElementById("stock").value = "";
+
+document.getElementById("description").value = "";
+
+document.getElementById("editingIndex").value = "";
+
+uploadedImage = "";
+
+document.getElementById("preview").innerHTML =
+"Image Preview";
+
+  }
+
+  function logout(){
+
+document.getElementById("dashboard")
+.style.display="none";
+
+document.getElementById("loginPage")
+.style.display="flex";
+
+  }
+
+  function loadOrders(){
+
+let orders =
+JSON.parse(
+localStorage.getItem("orders")
+) || [];
+
+let html="";
+
+orders.forEach(order=>{
+
+html += `
+
+<div class="product">
+
+<div class="product-info">
+
+<h3>
+Order #${order.id}
+</h3>
+
+<p>
+Customer:
+${order.customer}
+</p>
+
+<p>
+Phone:
+${order.phone}
+</p>
+
+<p>
+Total:
+₦${order.total}
+</p>
+
+<p>
+Status:
+${order.status}
+</p>
+
+</div>
+
+<select
+onchange="updateOrderStatus(
+${order.id},
+this.value
+)">
+
+<option
+${order.status==="Pending"?"selected":""}>
+Pending
+</option>
+
+<option
+${order.status==="Processing"?"selected":""}>
+Processing
+</option>
+
+<option
+${order.status==="Shipped"?"selected":""}>
+Shipped
+</option>
+
+<option
+${order.status==="Delivered"?"selected":""}>
+Delivered
+</option>
+
+<option
+${order.status==="Cancelled"?"selected":""}>
+Cancelled
+</option>
+
+</select>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"ordersList"
+).innerHTML = html;
+
+  }
+
+  function updateOrderStatus(
+id,
+status
+){
+
+let orders =
+JSON.parse(
+localStorage.getItem("orders")
+) || [];
+
+orders.forEach(order=>{
+
+if(order.id==id){
+
+order.status=status;
+
+}
+
+});
+
+localStorage.setItem(
+"orders",
+JSON.stringify(orders)
+);
+
+loadOrders();
+
+  }
+
+  function showSection(sectionId,element){
+
+const sections = [
+
+"dashboardSection",
+"productsSection",
+"categoriesSection",
+"ordersSection",
+"customersSection",
+"settingsSection"
+
+];
+
+sections.forEach(section=>{
+
+document.getElementById(section)
+.style.display="none";
+
+});
+
+document.getElementById(sectionId)
+.style.display="block";
+
+document
+.querySelectorAll(".menu-item")
+.forEach(item=>{
+
+item.classList.remove("active");
+
+});
+
+element.classList.add("active");
+
+  }
+
+  loadCategories();
+populateCategoryDropdown();
 
 </script>
 

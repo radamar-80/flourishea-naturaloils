@@ -191,6 +191,37 @@ color:#4d7c57;
 margin:10px 0;
 }
 
+  .wishlist-btn{
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border:1px solid #4d7c57;
+background:white;
+color:#4d7c57;
+border-radius:12px;
+cursor:pointer;
+  }
+
+                             .wishlist-container{
+position:relative;
+cursor:pointer;
+}
+
+#wishlistCount{
+position:absolute;
+top:-8px;
+right:-10px;
+background:#4d7c57;
+color:white;
+width:20px;
+height:20px;
+border-radius:50%;
+font-size:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
 .add-cart{
 width:100%;
 padding:12px;
@@ -211,6 +242,26 @@ margin-top:60px;
 text-align:center;
 }
 
+  .cart-container{
+position:relative;
+cursor:pointer;
+}
+
+#cartCount{
+position:absolute;
+top:-8px;
+right:-10px;
+background:red;
+color:white;
+font-size:12px;
+width:20px;
+height:20px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
 </style>
 </head>
 <body>
@@ -224,7 +275,9 @@ text-align:center;
 
 <div class="header-icons">
 
-<svg class="icon" viewBox="0 0 24 24">
+<svg
+class="icon"
+onclick="openAccount()"> viewBox="0 0 24 24">
 <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1015.5 14l5 4.99L20.49 20zM10 15a5 5 0 110-10 5 5 0 010 10z"/>
 </svg>
 
@@ -241,6 +294,17 @@ text-align:center;
 </svg>
 
 </div>
+
+  <div class="wishlist-container">
+
+<svg class="icon"
+onclick="openWishlist()">
+<!-- Wishlist SVG -->
+</svg>
+
+<span id="wishlistCount">0</span>
+
+  </div>
 
 </header>
 
@@ -277,41 +341,295 @@ text-align:center;
 
 </section>
 
-<section class="products">
+  <input
+type="text"
+id="storeSearch"
+placeholder="Search products..."
+onkeyup="loadStoreProducts()">
 
-<h2 class="section-title">Featured Products</h2>
+  <select
+id="storeCategory"
+onchange="loadStoreProducts()">
 
-<div class="product-grid">
+<option value="All">
+All Categories
+</option>
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1556228578-dd6c7f1c1e6d">
-<div class="product-name">Organic Shea Cream</div>
-<div class="price">₦8,500</div>
-<button class="add-cart">Add To Cart</button>
-</div>
+  </select>
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1625772452859-1c03d5bf1137">
-<div class="product-name">Coconut Body Oil</div>
-<div class="price">₦6,000</div>
-<button class="add-cart">Add To Cart</button>
-</div>
+  <section class="products">
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9">
-<div class="product-name">Moisturizing Lotion</div>
-<div class="price">₦7,500</div>
-<button class="add-cart">Add To Cart</button>
-</div>
+  <h2 class="section-title">
+  Featured Products
+  </h2>
 
-</div>
+  <div
+  class="product-grid"
+  id="productGrid">
+  </div>
 
-</section>
+  </section>
 
 <footer>
 <h2>Flourishea</h2>
 <p>Natural Creams • Oils • Lotions</p>
 </footer>
 
+  <script>
+
+loadStoreProducts();
+
+function loadStoreProducts(){
+
+let products =
+JSON.parse(
+localStorage.getItem("products")
+) || [];
+
+const search =
+
+document
+.getElementById("storeSearch")
+?.value
+.toLowerCase() || "";
+
+let html = "";
+
+  const selectedCategory =
+
+document
+.getElementById("storeCategory")
+?.value || "All";
+
+products = products.filter(product=>{
+
+const matchesSearch =
+
+product.name
+.toLowerCase()
+.includes(search);
+
+const matchesCategory =
+
+selectedCategory==="All" ||
+
+product.category===
+selectedCategory;
+
+return matchesSearch &&
+matchesCategory;
+
+});
+
+products.forEach(product=>{
+
+if(product.status==="Out of Stock")
+return;
+
+html += `
+
+<div class="product-card">
+
+<img
+src="${product.image}"
+onclick="openProduct(${index})"
+style="cursor:pointer;">
+
+<div
+class="product-name"
+onclick="openProduct(${index})"
+style="cursor:pointer;">
+${product.name}
+</div>
+
+<div class="price">
+₦${product.price}
+</div>
+
+<button
+class="wishlist-btn"
+onclick="addToWishlist(${index})">
+♡ Wishlist
+</button>
+
+<button
+class="add-cart"
+onclick="addToCart(${index})">
+Add To Cart
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("productGrid")
+.innerHTML = html;
+
+}
+
+    function openProduct(index){
+
+localStorage.setItem(
+"selectedProduct",
+index
+);
+
+window.location.href =
+"product.html";
+
+}
+
+    function openCart(){
+
+window.location.href =
+"cart.html";
+
+    }
+
+    function addToWishlist(index){
+
+let products =
+JSON.parse(
+localStorage.getItem("products")
+) || [];
+
+let wishlist =
+JSON.parse(
+localStorage.getItem("wishlist")
+) || [];
+
+wishlist.push(products[index]);
+
+localStorage.setItem(
+"wishlist",
+JSON.stringify(wishlist)
+);
+
+updateWishlistCount();
+
+alert("Added To Wishlist");
+
+    }
+
+    function updateWishlistCount(){
+
+let wishlist =
+JSON.parse(
+localStorage.getItem("wishlist")
+) || [];
+
+document.getElementById(
+"wishlistCount"
+).innerText =
+wishlist.length;
+
+      updateWishlistCount();
+
+    }
+
+    function openWishlist(){
+
+window.location.href =
+"wishlist.html";
+
+    }
+
+    function addToCart(index){
+
+let products =
+JSON.parse(
+localStorage.getItem("products")
+) || [];
+
+let cart =
+JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+cart.push(products[index]);
+
+localStorage.setItem(
+"cart",
+JSON.stringify(cart)
+);
+
+updateCartCount();
+
+alert("Added To Cart");
+
+    }
+
+    function updateCartCount(){
+
+let cart =
+
+JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+document.getElementById(
+"cartCount"
+).innerText = cart.length;
+      updateCartCount();
+
+    }
+
+    function openAccount(){
+
+const user =
+localStorage.getItem(
+"currentUser"
+);
+
+if(user){
+
+window.location.href =
+"account.html";
+
+}else{
+
+window.location.href =
+"login.html";
+
+}
+
+    }
+    
+    function loadStoreCategories(){
+
+let categories =
+
+JSON.parse(
+localStorage.getItem("categories")
+) || [];
+
+const select =
+
+document.getElementById(
+"storeCategory"
+);
+
+select.innerHTML =
+
+'<option value="All">All Categories</option>';
+
+categories.forEach(category=>{
+
+select.innerHTML +=
+
+`<option value="${category}">
+${category}
+</option>`;
+
+});
+
+}
+
+loadStoreCategories();
+
+  </script>
+  
 </body>
 </html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checkout - Flourishea</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:#f7f2ea;
+padding:30px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+display:grid;
+grid-template-columns:1fr 400px;
+gap:30px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+h2{
+margin-bottom:20px;
+color:#4d7c57;
+}
+
+input,
+textarea,
+select{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+textarea{
+height:100px;
+resize:none;
+}
+
+.order-item{
+display:flex;
+justify-content:space-between;
+padding:12px 0;
+border-bottom:1px solid #eee;
+}
+
+.total{
+font-size:24px;
+font-weight:700;
+margin-top:20px;
+color:#4d7c57;
+}
+
+.checkout-btn{
+width:100%;
+padding:15px;
+background:#4d7c57;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+font-weight:600;
+margin-top:20px;
+}
+
+.checkout-btn:hover{
+opacity:.9;
+}
+
+.success{
+display:none;
+background:#d4edda;
+color:#155724;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+@media(max-width:900px){
+
+.container{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<div
+class="success"
+id="successMessage">
+Order placed successfully!
+</div>
+
+<h2>Delivery Information</h2>
+
+<input
+type="text"
+id="fullname"
+placeholder="Full Name">
+
+<input
+type="tel"
+id="phone"
+placeholder="Phone Number">
+
+<input
+type="email"
+id="email"
+placeholder="Email Address">
+
+<textarea
+id="address"
+placeholder="Delivery Address"></textarea>
+
+<input
+type="text"
+id="city"
+placeholder="City">
+
+<select id="state">
+
+<option value="">
+Select State
+</option>
+
+<option>Abia</option>
+<option>Adamawa</option>
+<option>Akwa Ibom</option>
+<option>Anambra</option>
+<option>Bauchi</option>
+<option>Bayelsa</option>
+<option>Benue</option>
+<option>Borno</option>
+<option>Cross River</option>
+<option>Delta</option>
+<option>Ebonyi</option>
+<option>Edo</option>
+<option>Ekiti</option>
+<option>Enugu</option>
+<option>FCT</option>
+<option>Gombe</option>
+<option>Imo</option>
+<option>Jigawa</option>
+<option>Kaduna</option>
+<option>Kano</option>
+<option>Katsina</option>
+<option>Kebbi</option>
+<option>Kogi</option>
+<option>Kwara</option>
+<option>Lagos</option>
+<option>Nasarawa</option>
+<option>Niger</option>
+<option>Ogun</option>
+<option>Ondo</option>
+<option>Osun</option>
+<option>Oyo</option>
+<option>Plateau</option>
+<option>Rivers</option>
+<option>Sokoto</option>
+<option>Taraba</option>
+<option>Yobe</option>
+<option>Zamfara</option>
+
+</select>
+
+<textarea
+id="notes"
+placeholder="Order Notes (Optional)">
+</textarea>
+
+<button
+class="checkout-btn"
+onclick="startPayment()">
+Place Order
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Order Summary</h2>
+
+<div id="orderSummary"></div>
+
+<div
+class="total"
+id="orderTotal">
+₦0
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+loadOrderSummary();
+
+function loadOrderSummary(){
+
+let cart =
+JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+let html = "";
+
+let total = 0;
+
+cart.forEach(item=>{
+
+total += Number(item.price);
+
+html += `
+
+<div class="order-item">
+
+<span>
+${item.name}
+</span>
+
+<span>
+₦${item.price}
+</span>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"orderSummary"
+).innerHTML = html;
+
+document.getElementById(
+"orderTotal"
+).innerHTML =
+"Total: ₦" + total;
+
+}
+
+function startPayment(){
+
+const fullname =
+document.getElementById("fullname").value;
+
+const phone =
+document.getElementById("phone").value;
+
+const email =
+document.getElementById("email").value;
+
+const address =
+document.getElementById("address").value;
+
+const city =
+document.getElementById("city").value;
+
+const state =
+document.getElementById("state").value;
+
+const notes =
+document.getElementById("notes").value;
+
+if(
+!fullname ||
+!phone ||
+!email ||
+!address ||
+!city ||
+!state
+){
+
+alert(
+"Please fill all required fields"
+);
+
+return;
+
+}
+
+let cart =
+JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+if(cart.length===0){
+
+alert("Your cart is empty");
+
+return;
+
+}
+
+let total = 0;
+
+cart.forEach(item=>{
+
+total += Number(item.price);
+
+});
+
+let orders =
+JSON.parse(
+localStorage.getItem("orders")
+) || [];
+
+const order = {
+
+id: Date.now(),
+
+customer: fullname,
+
+phone: phone,
+
+email: email,
+
+address: address,
+
+city: city,
+
+state: state,
+
+notes: notes,
+
+items: cart,
+
+total: total,
+
+status: "Pending",
+
+date: new Date().toLocaleString()
+
+};
+
+orders.push(order);
+
+localStorage.setItem(
+"orders",
+JSON.stringify(orders)
+);
+
+localStorage.removeItem("cart");
+
+document.getElementById(
+"successMessage"
+).style.display = "block";
+
+setTimeout(()=>{
+
+window.location.href =
+"index.html";
+
+},2000);
+
+}
+
+  async function startPayment(){
+
+const response =
+await fetch(
+"/initialize-payment",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+amount:total
+})
+}
+);
+
+const data =
+await response.json();
+
+window.location.href =
+data.data.authorization_url;
+
+  }
+
+</script>
+
+</body>
+</html>
